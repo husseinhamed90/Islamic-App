@@ -31,11 +31,11 @@ class VersesScreen extends StatelessWidget {
               children: [
                 Text(context.read<AppProvider>().suwar![index].name!,
                     style: const TextStyle(color: Colors.white)),
-                Spacer(),
+                const Spacer(),
                 IconButton(onPressed: () {
                   String audioUrl = context.read<AppProvider>().getAudioUrl(baseUrl,context.read<AppProvider>().suwar![index].id!);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(audioUrl:audioUrl,reciterName:reciterName,suratName: context.read<AppProvider>().suwar![index].name!,)));
-                }, icon: Icon(Icons.play_arrow,color: Colors.white,))
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(baseUrl:baseUrl ,audioUrl:audioUrl,reciterName:reciterName,suratName: context.read<AppProvider>().suwar![index].name!, id: context.read<AppProvider>().suwar![index].id!,)));
+                }, icon: const Icon(Icons.play_arrow,color: Colors.white,))
               ],
             );
           },

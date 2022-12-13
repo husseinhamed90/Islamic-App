@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:islamiapp/DataLayer/ApiService.dart';
+import 'package:islamiapp/Logic/AppProvider.dart';
+import 'package:provider/provider.dart';
 import 'VersesScreen.dart';
 
 class HomePage extends StatelessWidget {
@@ -8,14 +10,6 @@ class HomePage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  List<String> images = [
-    "https://quran.com.kw/wp-content/uploads/%D8%A7%D9%84%D8%B4%D9%8A%D8%AE-%D9%85%D8%B4%D8%A7%D8%B1%D9%8A-%D8%B1%D8%A7%D8%B4%D8%AF-%D8%A7%D9%84%D8%B9%D9%81%D8%A7%D8%B3%D9%8A.jpg",
-    "https://pbs.twimg.com/profile_images/1594678248885157888/JKjFw-mH_400x400.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Maher_Al_Mueaqly.png/270px-Maher_Al_Mueaqly.png",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg/247px-Abdul-Rahman_Al-Sudais_%28Cropped%2C_2011%29.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/%D9%8A%D8%A7%D8%B3%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B3%D8%B1%D9%8A_%D8%A5%D9%85%D8%A7%D9%85_%D9%88%D8%AE%D8%B7%D9%8A%D8%A8_%D9%88%D9%82%D8%A7%D8%B1%D8%A6_%D9%82%D8%B1%D8%A2%D9%86_%D8%B3%D8%B9%D9%88%D8%AF%D9%8A.jpg/220px-%D9%8A%D8%A7%D8%B3%D8%B1_%D8%A7%D9%84%D8%AF%D9%88%D8%B3%D8%B1%D9%8A_%D8%A5%D9%85%D8%A7%D9%85_%D9%88%D8%AE%D8%B7%D9%8A%D8%A8_%D9%88%D9%82%D8%A7%D8%B1%D8%A6_%D9%82%D8%B1%D8%A2%D9%86_%D8%B3%D8%B9%D9%88%D8%AF%D9%8A.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/e/ef/%D8%B5%D9%84%D8%A7%D8%AD_%D8%A8%D8%A7%D8%B9%D8%AB%D9%85%D8%A7%D9%86.jpg"
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +36,7 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index){
                     return GestureDetector(
                       onTap: () {
+                        context.read<AppProvider>().makePlaylist(snapshot.data![index].moshaf![0].server!);
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>  VersesScreen(reciterName: snapshot.data![index].name!,baseUrl: snapshot.data![index].moshaf![0].server!,)));
 
                       },
@@ -68,7 +63,11 @@ class HomePage extends StatelessWidget {
                 ));
           }
           else{
-            return const Center(child: CircularProgressIndicator(),);
+            return Container(
+                color:  Colors.black,
+                child: const Center(child: CircularProgressIndicator(
+                  color: Colors.white,
+                ),));
           }
 
         },
