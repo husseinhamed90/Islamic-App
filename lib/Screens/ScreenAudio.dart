@@ -71,6 +71,9 @@ class _ScreenAudioState extends State<ScreenAudio> {
               stream: audioPlayer.currentIndexStream,
               builder: (context, snapshot) {
                 if(snapshot.hasData){
+                  if(appProvider!.wantRepeat){
+                    audioPlayer.seekToPrevious();
+                  }
                   Sura currentSura = appProvider!.suwar!.where((element) => element.id==snapshot.data!+1).toList()[0];
                   return Text(currentSura.name!,style: const TextStyle(
                       color: Colors.white,fontSize: 20
