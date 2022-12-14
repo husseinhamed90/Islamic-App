@@ -1,20 +1,30 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Helpers/HelperClasses/PositionData.dart';
 import '../Models/Sura.dart';
 import '../Helpers/constants.dart';
 
 class AppProvider with ChangeNotifier{
   bool wantRepeat=false;
+  bool wantShuffle=false;
   static int _nextMediaId = 0;
   ConcatenatingAudioSource? playlist;
   Sura ?currentSura;
 
+
   void setCurrentSura(Sura current){
     currentSura= current;
+    notifyListeners();
+  }
+  void setWantShuffle(){
+    wantShuffle=!wantShuffle;
     notifyListeners();
   }
   void setWantRepeat(){
