@@ -14,16 +14,28 @@ import '../Helpers/constants.dart';
 class AppProvider with ChangeNotifier{
   bool wantRepeat=false;
   bool wantShuffle=false;
-  int currentIndex=0;
+  int currentIndex=-1;
+  bool isAudioChanged=false;
+  int prevIndex=-1;
   static int _nextMediaId = 0;
   ConcatenatingAudioSource? playlist;
   Sura ?currentSura;
   AudioPlayer audioPlayer = AudioPlayer();
 
+  void setIsAudioChanged(bool current){
+    isAudioChanged = current;
+    notifyListeners();
+  }
+
   void setCurrentSura(Sura current){
     currentSura= current;
     notifyListeners();
   }
+  void setPrevIndex(int current){
+    prevIndex= current;
+    notifyListeners();
+  }
+
 
   Duration  currentAudioSeek=Duration();
   void setCurrentAudioSeek(Duration duration){
@@ -37,7 +49,7 @@ class AppProvider with ChangeNotifier{
 
   void resetSeek(){
     currentAudioSeek=Duration();
-    notifyListeners();
+    //notifyListeners();
   }
   void setWantShuffle(){
     wantShuffle=!wantShuffle;

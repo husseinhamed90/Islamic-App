@@ -33,9 +33,19 @@ class VersesScreen extends StatelessWidget {
                     style: const TextStyle(color: Colors.white)),
                 const Spacer(),
                 IconButton(onPressed: () {
+                  if(!(context.read<AppProvider>().currentIndex==-1))
+                  {
+                    if(context.read<AppProvider>().currentIndex!=index){
+                      context.read<AppProvider>().setIsAudioChanged(true);
+                    }
+                    else{
+                      context.read<AppProvider>().setIsAudioChanged(false);
+                    }
+                  }
+                  context.read<AppProvider>().setCurrentIndex(index);
                   String audioUrl = context.read<AppProvider>().getAudioUrl(baseUrl,context.read<AppProvider>().suwar![index].id!);
                   Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(baseUrl:baseUrl ,audioUrl:audioUrl,reciterName:reciterName,suratName: context.read<AppProvider>().suwar![index].name!, id: context.read<AppProvider>().suwar![index].id!,)));
-                }, icon: const Icon(Icons.play_arrow,color: Colors.white,))
+                }, icon:Icon(context.watch<AppProvider>().currentIndex==index?Icons.pause:Icons.play_arrow,color: Colors.white,))
               ],
             );
           },

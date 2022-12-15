@@ -6,7 +6,7 @@ package="com.example.islamiapp">
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
 <application
-    android:label="audio_service_test_repo"
+    android:label="Islamic App"
     android:name="${applicationName}"
     android:icon="@mipmap/ic_launcher">
     <activity

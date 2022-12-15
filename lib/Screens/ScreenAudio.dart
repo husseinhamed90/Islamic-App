@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:islamiapp/Logic/AppProvider.dart';
@@ -8,7 +7,6 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:volume_controller/volume_controller.dart';
-
 import '../Helpers/HelperClasses/PositionData.dart';
 import '../Widgets/RowOfControlsButtons.dart';
 
@@ -27,19 +25,17 @@ class ScreenAudio extends StatefulWidget {
 
 class _ScreenAudioState extends State<ScreenAudio> {
   late AppProvider appProvider;
-
   double _setVolumeValue = 0;
-
-  late StreamSubscription<Duration>gg;
   @override
   void initState() {
-    VolumeController().getVolume().then((volume) {
-     setState(() {
-       _setVolumeValue = volume;
-     });
+    VolumeController().listener((p0) {
+      setState(() {
+        _setVolumeValue = p0;
+      });
     });
     appProvider = Provider.of<AppProvider>(context, listen: false)..makePlaylist(widget.baseUrl);
-    if(widget.id==appProvider.currentIndex){
+    print(widget.id-1);
+    if(!appProvider.isAudioChanged){
       if(appProvider.audioPlayer.playing){
         appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
       }
@@ -53,7 +49,8 @@ class _ScreenAudioState extends State<ScreenAudio> {
       appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
       appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
     }
-    gg =getCurrentDuration();
+    getCurrentDuration();
+    appProvider.audioPlayer.play();
     super.initState();
 
   }
@@ -61,7 +58,6 @@ class _ScreenAudioState extends State<ScreenAudio> {
   @override
   void dispose() {
     VolumeController().removeListener();
-    //audioPlayer.dispose();
     super.dispose();
   }
 
@@ -73,29 +69,32 @@ class _ScreenAudioState extends State<ScreenAudio> {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            const SizedBox(height: 50,),
+            const SizedBox(height: 25,),
+            const Text("Volume",style: TextStyle(
+                color: Colors.white,fontSize: 20
+            ),textDirection: TextDirection.rtl,textAlign: TextAlign.center),
+            buildVolumeSlider(),
             Text(widget.reciterName,style: const TextStyle(
                 color: Colors.white,fontSize: 25
             ),textDirection: TextDirection.rtl),
             buildStreamOfCurrentSuraName(),
-            const SizedBox(height: 20,),
             buildStreamOfPlaylistTags(),
-            const SizedBox(height: 10,),
-            buildVolumeSlider(),
-            const SizedBox(height: 10,),
+            const SizedBox(height: 25,),
             buildStreamOfSeekPosition(),
-            RowOfControlsButtons(audioPlayer: appProvider.audioPlayer)
+            RowOfControlsButtons(audioPlayer: appProvider.audioPlayer),
+            const SizedBox(height: 25,),
           ],
         ),
       ),
     );
   }
+
   StreamSubscription<Duration> getCurrentDuration(){
     return appProvider.audioPlayer.positionStream.listen((event) {
       appProvider.currentAudioSeek=event;
-      print(event);
     });
   }
+
   Stream<PositionData> _positionDataStream(){
     return Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
         appProvider.audioPlayer.positionStream,
@@ -104,7 +103,6 @@ class _ScreenAudioState extends State<ScreenAudio> {
   }
 
   StreamBuilder<int?> buildStreamOfCurrentSuraName() {
-
     return StreamBuilder(
             stream: appProvider.audioPlayer.currentIndexStream ,
             builder: (context, snapshot) {
@@ -120,8 +118,8 @@ class _ScreenAudioState extends State<ScreenAudio> {
               else{
                 return const Center(child: CircularProgressIndicator(color: Colors.white),);
               }
-
-          },);
+          },
+    );
   }
 
   StreamBuilder<SequenceState?> buildStreamOfPlaylistTags() {
@@ -144,7 +142,8 @@ class _ScreenAudioState extends State<ScreenAudio> {
               else{
                 return const Center(child: CircularProgressIndicator(color: Colors.white),);
               }
-          },);
+          },
+    );
   }
 
   SliderTheme buildVolumeSlider() {
@@ -171,8 +170,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
   }
 
   OrientationBuilder buildStreamOfSeekPosition() {
-
-    return  OrientationBuilder(
+    return OrientationBuilder(
       builder: (context, orientation) {
         return StreamBuilder<PositionData>(
           stream: _positionDataStream().asBroadcastStream(),
@@ -193,16 +191,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
                   progress: positionData?.current??Duration.zero,
                   buffered: positionData?.buffered??Duration.zero,
                   total: positionData?.total??Duration.zero,
-                  // onDragUpdate: (details) {
-                  //   print(details.timeStamp);
-                  //
-                  //   appProvider.setCurrentAudioSeek(details.timeStamp);
-                  // },
-                  onSeek: (value) {
-
-                    appProvider.audioPlayer.seek;
-
-                  },
+                  onSeek: appProvider.audioPlayer.seek
                 ),
               );
             }

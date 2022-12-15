@@ -36,7 +36,6 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index){
                     return GestureDetector(
                       onTap: () {
-                        context.read<AppProvider>().setCurrentIndex(index+1);
                         context.read<AppProvider>().makePlaylist(snapshot.data![index].moshaf![0].server!);
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>  VersesScreen(reciterName: snapshot.data![index].name!,baseUrl: snapshot.data![index].moshaf![0].server!,)));
 
