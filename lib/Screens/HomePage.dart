@@ -36,6 +36,7 @@ class HomePage extends StatelessWidget {
                   itemBuilder: (BuildContext context, int index){
                     return GestureDetector(
                       onTap: () {
+                        context.read<AppProvider>().setCurrentIndex(index+1);
                         context.read<AppProvider>().makePlaylist(snapshot.data![index].moshaf![0].server!);
                         Navigator.push(context, MaterialPageRoute(builder: (context) =>  VersesScreen(reciterName: snapshot.data![index].name!,baseUrl: snapshot.data![index].moshaf![0].server!,)));
 
@@ -48,7 +49,7 @@ class HomePage extends StatelessWidget {
                               width: double.infinity,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(10), // Image border
-                                child: Image.network("https://www.fekera.com/wp-content/uploads/2019/11/%D8%AA%D9%81%D8%B3%D9%8A%D8%B1-%D8%AD%D9%84%D9%85-%D8%B1%D8%A4%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81.jpg", fit: BoxFit.cover),
+                                child: Image.network("https://quran.com.kw/wp-content/uploads/%D8%A7%D9%84%D8%B4%D9%8A%D8%AE-%D8%B3%D8%B9%D8%AF-%D8%A7%D9%84%D8%BA%D8%A7%D9%85%D8%AF%D9%8A.jpg", fit: BoxFit.cover),
                               ),
                             ),
                           ),

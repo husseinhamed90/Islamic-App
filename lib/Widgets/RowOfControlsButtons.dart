@@ -46,7 +46,7 @@ class RowOfControlsButtons extends StatelessWidget {
                   audioPlayer.pause();
                 }, icon: const Icon(Icons.pause,color: Colors.white,size: 32,));
               }
-              return IconButton(onPressed: () {
+                return IconButton(onPressed: () {
                 audioPlayer.play();
               }, icon: const Icon(Icons.play_arrow,color: Colors.white,size: 32,)
               );
@@ -62,7 +62,6 @@ class RowOfControlsButtons extends StatelessWidget {
           onPressed: () {
             context.read<AppProvider>().setWantShuffle();
             audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
-            print(audioPlayer.shuffleModeEnabled);
           },
         ),
         IconButton(

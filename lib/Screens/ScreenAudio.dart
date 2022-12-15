@@ -27,23 +27,41 @@ class ScreenAudio extends StatefulWidget {
 
 class _ScreenAudioState extends State<ScreenAudio> {
   late AppProvider appProvider;
-  AudioPlayer audioPlayer = AudioPlayer();
+
   double _setVolumeValue = 0;
 
+  late StreamSubscription<Duration>gg;
   @override
   void initState() {
-    VolumeController().getVolume().then((volume) => _setVolumeValue = volume);
+    VolumeController().getVolume().then((volume) {
+     setState(() {
+       _setVolumeValue = volume;
+     });
+    });
     appProvider = Provider.of<AppProvider>(context, listen: false)..makePlaylist(widget.baseUrl);
+    if(widget.id==appProvider.currentIndex){
+      if(appProvider.audioPlayer.playing){
+        appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
+      }
+      else{
+        appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
+        appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
+      }
+    }
+    else{
+      appProvider.resetSeek();
+      appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
+      appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
+    }
+    gg =getCurrentDuration();
     super.initState();
-    audioPlayer.setAudioSource(appProvider.playlist!);
-    audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
+
   }
 
   @override
   void dispose() {
     VolumeController().removeListener();
-    audioPlayer.dispose();
-
+    //audioPlayer.dispose();
     super.dispose();
   }
 
@@ -66,27 +84,33 @@ class _ScreenAudioState extends State<ScreenAudio> {
             buildVolumeSlider(),
             const SizedBox(height: 10,),
             buildStreamOfSeekPosition(),
-            RowOfControlsButtons(audioPlayer: audioPlayer)
+            RowOfControlsButtons(audioPlayer: appProvider.audioPlayer)
           ],
         ),
       ),
     );
   }
+  StreamSubscription<Duration> getCurrentDuration(){
+    return appProvider.audioPlayer.positionStream.listen((event) {
+      appProvider.currentAudioSeek=event;
+      print(event);
+    });
+  }
   Stream<PositionData> _positionDataStream(){
     return Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
-        audioPlayer.positionStream,
-        audioPlayer.bufferedPositionStream,
-        audioPlayer.durationStream,(position, bufferedPosition, duration) => PositionData(current: position, buffered: bufferedPosition,total: duration ?? Duration.zero));
+        appProvider.audioPlayer.positionStream,
+        appProvider.audioPlayer.bufferedPositionStream,
+        appProvider.audioPlayer.durationStream,(position, bufferedPosition, duration) => PositionData(current: position, buffered: bufferedPosition,total: duration ?? Duration.zero));
   }
 
   StreamBuilder<int?> buildStreamOfCurrentSuraName() {
 
     return StreamBuilder(
-            stream: audioPlayer.currentIndexStream ,
+            stream: appProvider.audioPlayer.currentIndexStream ,
             builder: (context, snapshot) {
               if(snapshot.hasData){
                 if(appProvider.wantRepeat){
-                  audioPlayer.seekToPrevious();
+                  appProvider.audioPlayer.seekToPrevious();
                 }
                 Sura currentSura = appProvider.suwar!.where((element) => element.id==snapshot.data!+1).toList()[0];
                 return Text(currentSura.name!,style: const TextStyle(
@@ -102,7 +126,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
 
   StreamBuilder<SequenceState?> buildStreamOfPlaylistTags() {
     return StreamBuilder<SequenceState?>(
-            stream: audioPlayer.sequenceStateStream,
+            stream: appProvider.audioPlayer.sequenceStateStream,
             builder: (context, snapshot) {
               if(snapshot.hasData){
                 final state =snapshot.data;
@@ -110,7 +134,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
                   return const SizedBox();
                 }
                 return SizedBox(
-                  width: double.infinity,
+                  width: double.infinity-50,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10), // Image border
                     child: Image.network("https://www.fekera.com/wp-content/uploads/2019/11/%D8%AA%D9%81%D8%B3%D9%8A%D8%B1-%D8%AD%D9%84%D9%85-%D8%B1%D8%A4%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81.jpg", fit: BoxFit.cover),
@@ -169,7 +193,16 @@ class _ScreenAudioState extends State<ScreenAudio> {
                   progress: positionData?.current??Duration.zero,
                   buffered: positionData?.buffered??Duration.zero,
                   total: positionData?.total??Duration.zero,
-                  onSeek: audioPlayer.seek,
+                  // onDragUpdate: (details) {
+                  //   print(details.timeStamp);
+                  //
+                  //   appProvider.setCurrentAudioSeek(details.timeStamp);
+                  // },
+                  onSeek: (value) {
+
+                    appProvider.audioPlayer.seek;
+
+                  },
                 ),
               );
             }

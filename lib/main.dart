@@ -7,6 +7,7 @@ import 'package:islamiapp/di.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:provider/provider.dart';
 import 'DataLayer/ApiService.dart';
+import 'Screens/SplashScreen.dart';
 
 
 
@@ -46,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         future: context.read<AppProvider>().getSuwar(),
         builder: (context, snapshot) {
           if(context.read<AppProvider>().suwar!=null){
-            return HomePage();
+            return const SplashScreen();
           }
           else{
             return const Center(child: CircularProgressIndicator(),);
