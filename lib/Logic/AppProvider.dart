@@ -2,28 +2,50 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:islamiapp/DataLayer/ApiService.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Helpers/HelperClasses/PositionData.dart';
+import '../Models/Reciter.dart';
 import '../Models/Sura.dart';
 import '../Helpers/constants.dart';
 
 class AppProvider with ChangeNotifier{
   bool wantRepeat=false;
   bool wantShuffle=false;
-  int currentIndex=-1;
+  int currentSuraIndex=-1;
+  int currentReciterIndex=-1;
   bool isAudioChanged=false;
+  bool isReciterChanged=false;
   int prevIndex=-1;
+  List<Reciter>?filteredReciter;
   static int _nextMediaId = 0;
   ConcatenatingAudioSource? playlist;
   Sura ?currentSura;
   AudioPlayer audioPlayer = AudioPlayer();
-
+  TextEditingController controller =TextEditingController();
+  void resetFilteredReciter(){
+    filteredReciter=null;
+    controller.clear();
+    notifyListeners();
+  }
+  Stream<int?>getCurrentPosition(){
+    return audioPlayer.currentIndexStream;
+  }
+  void fillFilteredReciter(String name){
+    filteredReciter = reciters!.where((element) => element.name!.contains(name)).toList();
+    notifyListeners();
+  }
   void setIsAudioChanged(bool current){
     isAudioChanged = current;
+    notifyListeners();
+  }
+
+  void setIsReciterChanged(bool current){
+    isReciterChanged = current;
     notifyListeners();
   }
 
@@ -37,19 +59,29 @@ class AppProvider with ChangeNotifier{
   }
 
 
-  Duration  currentAudioSeek=Duration();
+  Duration  currentAudioSeek=const Duration();
   void setCurrentAudioSeek(Duration duration){
     currentAudioSeek=duration;
     notifyListeners();
   }
-  void setCurrentIndex(int current){
-    currentIndex= current;
+  void setCurrentSuraIndex(int current){
+    currentSuraIndex= current;
+    //notifyListeners();
+  }
+  void setCurrentReciterIndex(int current){
+    currentReciterIndex= current;
     notifyListeners();
   }
 
+  List<Reciter>?reciters;
   void resetSeek(){
-    currentAudioSeek=Duration();
+    currentAudioSeek=const Duration();
     //notifyListeners();
+  }
+  Future getReciters()async{
+    reciters=[];
+    reciters = await ApiServices.getReciter();
+    notifyListeners();
   }
   void setWantShuffle(){
     wantShuffle=!wantShuffle;

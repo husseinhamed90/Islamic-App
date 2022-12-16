@@ -28,14 +28,13 @@ class _ScreenAudioState extends State<ScreenAudio> {
   double _setVolumeValue = 0;
   @override
   void initState() {
-    VolumeController().listener((p0) {
+    VolumeController().listener((currentVolume) {
       setState(() {
-        _setVolumeValue = p0;
+        _setVolumeValue = currentVolume;
       });
     });
     appProvider = Provider.of<AppProvider>(context, listen: false)..makePlaylist(widget.baseUrl);
-    print(widget.id-1);
-    if(!appProvider.isAudioChanged){
+    if(!appProvider.isAudioChanged&&!appProvider.isReciterChanged){
       if(appProvider.audioPlayer.playing){
         appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
       }
@@ -104,9 +103,13 @@ class _ScreenAudioState extends State<ScreenAudio> {
 
   StreamBuilder<int?> buildStreamOfCurrentSuraName() {
     return StreamBuilder(
-            stream: appProvider.audioPlayer.currentIndexStream ,
+           stream: context.read<AppProvider>().getCurrentPosition() ,
             builder: (context, snapshot) {
+               print("ccccccccccccccccccccccccccccccc");
               if(snapshot.hasData){
+                // print("ccccccccccccccccccccccccccccccc");
+                // print(snapshot.data!);
+                // context.read<AppProvider>().setCurrentSuraIndex(snapshot.data!);
                 if(appProvider.wantRepeat){
                   appProvider.audioPlayer.seekToPrevious();
                 }
@@ -135,7 +138,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
                   width: double.infinity-50,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10), // Image border
-                    child: Image.network("https://www.fekera.com/wp-content/uploads/2019/11/%D8%AA%D9%81%D8%B3%D9%8A%D8%B1-%D8%AD%D9%84%D9%85-%D8%B1%D8%A4%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D8%AD%D9%81.jpg", fit: BoxFit.cover),
+                    child: Image.network("https://images.akhbarelyom.com//images/images/medium/20201031140317535.jpg", fit: BoxFit.cover),
                   ),
                 );
               }

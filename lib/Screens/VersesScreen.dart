@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:islamiapp/Logic/AppProvider.dart';
 import 'package:provider/provider.dart';
-
 import 'ScreenAudio.dart';
 
 class VersesScreen extends StatelessWidget {
@@ -22,31 +21,53 @@ class VersesScreen extends StatelessWidget {
       ),
       body: Container(
         padding: const EdgeInsets.all(20),
-        child: ListView.separated(
-          itemCount: context.read<AppProvider>().suwar!.length,
-          separatorBuilder: (BuildContext context, int index) =>
+        child: StreamBuilder(
+          stream: context.read<AppProvider>().getCurrentPosition() ,
+          builder: (context, snapshot) {
+            if(context.read<AppProvider>().isReciterChanged){
+              context.read<AppProvider>().setCurrentSuraIndex(-1);
+            }
+            else{
+             if(snapshot.hasData){
+               context.read<AppProvider>().setCurrentSuraIndex(snapshot.data!);
+             }
+            }
+            return ListView.separated(
+              itemCount: context.read<AppProvider>().suwar!.length,
+              separatorBuilder: (BuildContext context, int index) =>
               const Divider(),
-          itemBuilder: (BuildContext context, int index) {
-            return Row(
-              children: [
-                Text(context.read<AppProvider>().suwar![index].name!,
-                    style: const TextStyle(color: Colors.white)),
-                const Spacer(),
-                IconButton(onPressed: () {
-                  if(!(context.read<AppProvider>().currentIndex==-1))
-                  {
-                    if(context.read<AppProvider>().currentIndex!=index){
-                      context.read<AppProvider>().setIsAudioChanged(true);
-                    }
-                    else{
-                      context.read<AppProvider>().setIsAudioChanged(false);
-                    }
-                  }
-                  context.read<AppProvider>().setCurrentIndex(index);
-                  String audioUrl = context.read<AppProvider>().getAudioUrl(baseUrl,context.read<AppProvider>().suwar![index].id!);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(baseUrl:baseUrl ,audioUrl:audioUrl,reciterName:reciterName,suratName: context.read<AppProvider>().suwar![index].name!, id: context.read<AppProvider>().suwar![index].id!,)));
-                }, icon:Icon(context.watch<AppProvider>().currentIndex==index?Icons.pause:Icons.play_arrow,color: Colors.white,))
-              ],
+              itemBuilder: (BuildContext context, int index) {
+                return Row(
+                  children: [
+                    Text(context.read<AppProvider>().suwar![index].name!,
+                        style: const TextStyle(color: Colors.white)),
+                    const Spacer(),
+                    IconButton(onPressed: () {
+                      if(context.read<AppProvider>().currentSuraIndex==index){
+                        context.read<AppProvider>().setIsAudioChanged(false);
+                        context.read<AppProvider>().setCurrentSuraIndex(-1);
+                        context.read<AppProvider>().audioPlayer.pause();
+                      }
+                      else{
+                        if(!(context.read<AppProvider>().currentSuraIndex==-1)) {
+                          if(context.read<AppProvider>().currentSuraIndex!=index){
+                            context.read<AppProvider>().setIsAudioChanged(true);
+                          }
+                          else{
+                            context.read<AppProvider>().setIsAudioChanged(false);
+                          }
+                        }
+                        else {
+                          context.read<AppProvider>().setIsReciterChanged(true);
+                        }
+                        context.read<AppProvider>().setCurrentSuraIndex(index);
+                        String audioUrl = context.read<AppProvider>().getAudioUrl(baseUrl,context.read<AppProvider>().suwar![index].id!);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(baseUrl:baseUrl ,audioUrl:audioUrl,reciterName:reciterName,suratName: context.read<AppProvider>().suwar![index].name!, id: context.read<AppProvider>().suwar![index].id!,)));
+                      }
+                    }, icon:Icon(context.watch<AppProvider>().currentSuraIndex==index?Icons.pause:Icons.play_arrow,color: Colors.white,))
+                  ],
+                );
+              },
             );
           },
         ),
