@@ -21,7 +21,6 @@ class RowOfControlsButtons extends StatelessWidget {
         IconButton(onPressed: () {
           audioPlayer.seekToPrevious();
         }, icon: const Icon(Icons.skip_previous_outlined,color: Colors.white,size: 32,)),
-
         IconButton(
           icon: Icon(Icons.repeat,color: context.watch<AppProvider>().wantRepeat?Colors.red:Colors.white),
           iconSize: 32.0,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../Logic/AppProvider.dart';
 import '../Models/Reciter.dart';
 import '../Screens/VersesScreen.dart';

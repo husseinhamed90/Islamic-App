@@ -105,9 +105,31 @@ class AppProvider with ChangeNotifier{
       ),).toList(),
     );
   }
+
   List<Sura>?suwar;
   Map<int,Sura>maps ={};
-   Future getSuwar() async{
+  Map<int,Map<String,dynamic>>map={};
+   Future<List<Sura>> getSuwar(String baseUrl) async{
+     List<Sura>reciterSwar=[];
+     if(map.isEmpty){
+       ListOfSuwar.forEach((element) {
+         map[element["id"]]=element;
+       });
+     }
+     List<String>audiosNames =await ApiServices.getSawrFromApi(baseUrl);
+     for(int i=0;i<audiosNames.length;i++){
+       int num = int.parse(audiosNames[i].replaceAll(".mp3", "").replaceAll(RegExp(r'^0+(?=.)'), ''));
+       reciterSwar.add(Sura.fromJson(map[num]!));
+     }
+     return reciterSwar;
+  }
+
+  String getAudioUrl(String baseUrl,int id){
+    NumberFormat formatter = NumberFormat("000");
+     return "$baseUrl${formatter.format(id)}.mp3";
+  }
+
+  Future getAllSawr() async{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     if(suwar==null){
       if(prefs.containsKey("suwar")){
@@ -119,10 +141,5 @@ class AppProvider with ChangeNotifier{
         await prefs.setString('suwar', encodedData);
       }
     }
-  }
-
-  String getAudioUrl(String baseUrl,int id){
-    NumberFormat formatter = NumberFormat("000");
-     return "$baseUrl${formatter.format(id)}.mp3";
   }
 }

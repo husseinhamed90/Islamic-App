@@ -105,7 +105,6 @@ class _ScreenAudioState extends State<ScreenAudio> {
     return StreamBuilder(
            stream: context.read<AppProvider>().getCurrentPosition() ,
             builder: (context, snapshot) {
-               print("ccccccccccccccccccccccccccccccc");
               if(snapshot.hasData){
                 // print("ccccccccccccccccccccccccccccccc");
                 // print(snapshot.data!);

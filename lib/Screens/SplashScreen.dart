@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
   void startTimer() {
     Future.delayed(const Duration(seconds: 5)).then((value){
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(),));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage(),));
     });
   }
   @override
@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen> {
             borderRadius: BorderRadius.circular(10), // Image border
             child: Image.asset("assets/images/logo.png", fit: BoxFit.cover),
           ),
-          //color: Colors.black,
         ),
       ),
     );
