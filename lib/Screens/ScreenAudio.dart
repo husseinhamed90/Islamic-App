@@ -64,26 +64,42 @@ class _ScreenAudioState extends State<ScreenAudio> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(10.0),
         child: ListView(
           children: [
-            const SizedBox(height: 25,),
-            const Text("Volume",style: TextStyle(
-                color: Colors.white,fontSize: 20
-            ),textDirection: TextDirection.rtl,textAlign: TextAlign.center),
+            SizedBox(height: height*0.05,),
+            Container(
+              alignment: Alignment.center,
+              height: height*0.05,
+              child: const Text("Volume",style: TextStyle(
+                  color: Colors.white,fontSize: 25
+              ),textDirection: TextDirection.rtl,textAlign: TextAlign.center),
+            ),
             buildVolumeSlider(),
-            Text(widget.reciterName,style: const TextStyle(
-                color: Colors.white,fontSize: 25
-            ),textDirection: TextDirection.rtl),
-            buildStreamOfCurrentSuraName(),
+            Container(
+              alignment: Alignment.center,
+              height: height*0.05,
+              child:Text(widget.reciterName,style: const TextStyle(
+                  color: Colors.white,fontSize: 30,fontWeight: FontWeight.w600
+              ),textDirection: TextDirection.rtl),
+            ),
+            Container(
+              alignment: Alignment.center,
+              height: height*0.05,
+              child:buildStreamOfCurrentSuraName(),
+            ),
+            SizedBox(height: height*0.05,),
             buildStreamOfPlaylistTags(),
-            const SizedBox(height: 25,),
+            SizedBox(height: height*0.05,),
             buildStreamOfSeekPosition(),
             RowOfControlsButtons(audioPlayer: appProvider.audioPlayer),
-            const SizedBox(height: 25,),
+            SizedBox(height: height*0.05,),
           ],
         ),
       ),
@@ -110,10 +126,10 @@ class _ScreenAudioState extends State<ScreenAudio> {
               if(snapshot.hasData){
                 if(appProvider.wantRepeat){
                   appProvider.audioPlayer.seekToPrevious();
-                };
+                }
                 Sura currentSura = widget.reciterSwar[snapshot.data!];
-                return Text(currentSura.name!,style: const TextStyle(
-                    color: Colors.white,fontSize: 20
+                return Text(" سورة ${currentSura.name!}",style: const TextStyle(
+                    color: Colors.white,fontSize: 25,fontWeight: FontWeight.w500
                 ),textDirection: TextDirection.rtl);
               }
               else{
