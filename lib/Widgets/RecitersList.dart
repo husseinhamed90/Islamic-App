@@ -12,6 +12,7 @@ class RecitersList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Expanded(
       flex: 6,
       child: Container(
@@ -30,22 +31,14 @@ class RecitersList extends StatelessWidget {
             itemBuilder: (BuildContext context, int index){
               return GestureDetector(
                 onTap: () {
-                  if(!(context.read<AppProvider>().currentReciterIndex==-1))
-                  {
-                    if(context.read<AppProvider>().currentReciterIndex!=index){
-                      context.read<AppProvider>().setCurrentSuraIndex(-1);
-                      context.read<AppProvider>().setIsReciterChanged(true);
-                    }
-                    else{
-                      context.read<AppProvider>().setIsReciterChanged(false);
-                    }
+                  if(context.read<AppProvider>().currentReciterIndex==index){
+                    context.read<AppProvider>().setIsReciterChanged(false);
                   }
                   else{
+                    context.read<AppProvider>().setCurrentReciterIndex(index);
                     context.read<AppProvider>().setCurrentSuraIndex(-1);
                     context.read<AppProvider>().setIsReciterChanged(true);
                   }
-                  context.read<AppProvider>().setCurrentReciterIndex(index);
-                  context.read<AppProvider>().makePlaylist(reciters[index].moshaf![0].server!);
                   Navigator.push(context, MaterialPageRoute(builder: (context) =>  VersesScreen(reciterName: reciters[index].name!,baseUrl: reciters[index].moshaf![0].server!,)));
                 },
                 child: Column(

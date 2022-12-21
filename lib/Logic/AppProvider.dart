@@ -18,6 +18,7 @@ class AppProvider with ChangeNotifier{
   bool wantShuffle=false;
   int currentSuraIndex=-1;
   int currentReciterIndex=-1;
+  int prevReciterIndex=-1;
   bool isAudioChanged=false;
   bool isReciterChanged=false;
   int prevIndex=-1;
@@ -46,7 +47,7 @@ class AppProvider with ChangeNotifier{
 
   void setIsReciterChanged(bool current){
     isReciterChanged = current;
-    notifyListeners();
+   // notifyListeners();
   }
 
   void setCurrentSura(Sura current){
@@ -66,10 +67,14 @@ class AppProvider with ChangeNotifier{
   }
   void setCurrentSuraIndex(int current){
     currentSuraIndex= current;
-    //notifyListeners();
+    notifyListeners();
   }
   void setCurrentReciterIndex(int current){
     currentReciterIndex= current;
+    notifyListeners();
+  }
+  void setPrevReciterIndex(int current){
+    prevReciterIndex= current;
     notifyListeners();
   }
 
@@ -91,9 +96,9 @@ class AppProvider with ChangeNotifier{
     wantRepeat=!wantRepeat;
     notifyListeners();
   }
-  void makePlaylist(String baseUrl){
+  void makePlaylist(String baseUrl,List<Sura>newsuwarList){
     playlist = ConcatenatingAudioSource(
-      children: suwar!.map((e) =>AudioSource.uri(
+      children: newsuwarList.map((e) =>AudioSource.uri(
         Uri.parse(getAudioUrl(baseUrl, e.id!)),
         tag: MediaItem(
           id: '${_nextMediaId++}',
@@ -106,7 +111,6 @@ class AppProvider with ChangeNotifier{
     );
   }
 
-  List<Sura>?suwar;
   Map<int,Sura>maps ={};
   Map<int,Map<String,dynamic>>map={};
    Future<List<Sura>> getSuwar(String baseUrl) async{
@@ -121,25 +125,13 @@ class AppProvider with ChangeNotifier{
        int num = int.parse(audiosNames[i].replaceAll(".mp3", "").replaceAll(RegExp(r'^0+(?=.)'), ''));
        reciterSwar.add(Sura.fromJson(map[num]!));
      }
+
+     makePlaylist(baseUrl,reciterSwar);
      return reciterSwar;
   }
 
   String getAudioUrl(String baseUrl,int id){
     NumberFormat formatter = NumberFormat("000");
      return "$baseUrl${formatter.format(id)}.mp3";
-  }
-
-  Future getAllSawr() async{
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(suwar==null){
-      if(prefs.containsKey("suwar")){
-        suwar = Sura.decode(prefs.getString("suwar")!);
-      }
-      else{
-        suwar = ListOfSuwar.map((e) => Sura.fromJson(e)).toList();
-        final String encodedData = Sura.encode(suwar!);
-        await prefs.setString('suwar', encodedData);
-      }
-    }
   }
 }

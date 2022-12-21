@@ -12,9 +12,10 @@ import '../Widgets/RowOfControlsButtons.dart';
 
 class ScreenAudio extends StatefulWidget {
   const ScreenAudio({
-    Key? key,required this.id,required this.reciterName,required this.audioUrl,required this.suratName,required this.baseUrl
+    Key? key,required this.id,required this.reciterName,required this.audioUrl,required this.suratName,required this.baseUrl,required this.reciterSwar
   }) : super(key: key);
 
+  final List<Sura>reciterSwar;
   final String reciterName,audioUrl,suratName,baseUrl;
   final int id;
 
@@ -33,7 +34,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
         _setVolumeValue = currentVolume;
       });
     });
-    appProvider = Provider.of<AppProvider>(context, listen: false)..makePlaylist(widget.baseUrl);
+    appProvider = Provider.of<AppProvider>(context, listen: false);
     if(!appProvider.isAudioChanged&&!appProvider.isReciterChanged){
       if(appProvider.audioPlayer.playing){
         appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
@@ -45,6 +46,7 @@ class _ScreenAudioState extends State<ScreenAudio> {
     }
     else{
       appProvider.resetSeek();
+
       appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
       appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
     }
@@ -103,16 +105,13 @@ class _ScreenAudioState extends State<ScreenAudio> {
 
   StreamBuilder<int?> buildStreamOfCurrentSuraName() {
     return StreamBuilder(
-           stream: context.read<AppProvider>().getCurrentPosition() ,
+            stream: context.read<AppProvider>().getCurrentPosition(),
             builder: (context, snapshot) {
               if(snapshot.hasData){
-                // print("ccccccccccccccccccccccccccccccc");
-                // print(snapshot.data!);
-                // context.read<AppProvider>().setCurrentSuraIndex(snapshot.data!);
                 if(appProvider.wantRepeat){
                   appProvider.audioPlayer.seekToPrevious();
-                }
-                Sura currentSura = appProvider.suwar!.where((element) => element.id==snapshot.data!+1).toList()[0];
+                };
+                Sura currentSura = widget.reciterSwar[snapshot.data!];
                 return Text(currentSura.name!,style: const TextStyle(
                     color: Colors.white,fontSize: 20
                 ),textDirection: TextDirection.rtl);

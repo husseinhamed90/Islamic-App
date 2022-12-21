@@ -19,7 +19,15 @@ class RowOfControlsButtons extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(onPressed: () {
-          audioPlayer.seekToPrevious();
+
+          if(audioPlayer.hasPrevious){
+            audioPlayer.seekToPrevious();
+            context.read<AppProvider>().setCurrentSuraIndex(context.read<AppProvider>().currentSuraIndex-1);
+            print( context.read<AppProvider>().currentSuraIndex);
+          }
+          else{
+
+          }
         }, icon: const Icon(Icons.skip_previous_outlined,color: Colors.white,size: 32,)),
         IconButton(
           icon: Icon(Icons.repeat,color: context.watch<AppProvider>().wantRepeat?Colors.red:Colors.white),
@@ -38,15 +46,18 @@ class RowOfControlsButtons extends StatelessWidget {
               if(!(playing)){
                 return IconButton(onPressed: () {
                   audioPlayer.play();
+                  context.read<AppProvider>().setCurrentSuraIndex(audioPlayer.currentIndex!);
                 }, icon: const Icon(Icons.play_arrow,color: Colors.white,size: 32,));
               }
               else if(progressingState!=ProcessingState.completed){
                 return IconButton(onPressed: () {
                   audioPlayer.pause();
+                  context.read<AppProvider>().setCurrentSuraIndex(-1);
                 }, icon: const Icon(Icons.pause,color: Colors.white,size: 32,));
               }
                 return IconButton(onPressed: () {
                 audioPlayer.play();
+                context.read<AppProvider>().setCurrentSuraIndex(audioPlayer.currentIndex!);
               }, icon: const Icon(Icons.play_arrow,color: Colors.white,size: 32,)
               );
             }
@@ -68,6 +79,7 @@ class RowOfControlsButtons extends StatelessWidget {
           iconSize: 32.0,
           onPressed: () {
             audioPlayer.seekToNext();
+            context.read<AppProvider>().setCurrentSuraIndex(context.read<AppProvider>().currentSuraIndex+1);
           },
         ),
       ],

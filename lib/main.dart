@@ -39,17 +39,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         fontFamily: GoogleFonts.tajawal().fontFamily
       ),
-      home: FutureBuilder(
-        future: context.read<AppProvider>().getAllSawr(),
-        builder: (context, snapshot) {
-          if(context.read<AppProvider>().suwar!=null){
-            return const SplashScreen();
-          }
-          else{
-            return const Center(child: CircularProgressIndicator(),);
-          }
-        },
-      ),
+      home: const SplashScreen(),
     );
   }
 }
