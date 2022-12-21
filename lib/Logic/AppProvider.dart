@@ -37,6 +37,8 @@ class AppProvider with ChangeNotifier{
     return audioPlayer.currentIndexStream;
   }
   void fillFilteredReciter(String name){
+    print("asddsa");
+    print(reciters!.length);
     filteredReciter = reciters!.where((element) => element.name!.contains(name)).toList();
     notifyListeners();
   }
@@ -114,20 +116,24 @@ class AppProvider with ChangeNotifier{
   Map<int,Sura>maps ={};
   Map<int,Map<String,dynamic>>map={};
    Future<List<Sura>> getSuwar(String baseUrl) async{
-     List<Sura>reciterSwar=[];
+     Set<Sura>reciterSwar={};
      if(map.isEmpty){
        ListOfSuwar.forEach((element) {
          map[element["id"]]=element;
        });
      }
      List<String>audiosNames =await ApiServices.getSawrFromApi(baseUrl);
-     for(int i=0;i<audiosNames.length;i++){
-       int num = int.parse(audiosNames[i].replaceAll(".mp3", "").replaceAll(RegExp(r'^0+(?=.)'), ''));
-       reciterSwar.add(Sura.fromJson(map[num]!));
-     }
+     audiosNames = audiosNames.where((e) => e.contains(".mp3")).toList();
 
-     makePlaylist(baseUrl,reciterSwar);
-     return reciterSwar;
+     for(int i=0;i<audiosNames.length;i++){
+       String numberFromString = audiosNames[i].replaceAll(".mp3", "").replaceAll(RegExp(r'^0+(?=.)'), '').replaceAll( RegExp(r'[^0-9]'),'');
+       int num = int.parse(numberFromString);
+       if(reciterSwar.where((element) => element.id==num).isEmpty){
+         reciterSwar.add(Sura.fromJson(map[num]!));
+       }
+     }
+     makePlaylist(baseUrl,reciterSwar.toList());
+     return reciterSwar.toList();
   }
 
   String getAudioUrl(String baseUrl,int id){
