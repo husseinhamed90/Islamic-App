@@ -30,30 +30,16 @@ class _ScreenAudioState extends State<ScreenAudio> {
   @override
   void initState() {
     VolumeController().listener((currentVolume) {
-      setState(() {
-        _setVolumeValue = currentVolume;
-      });
+      setState(() => _setVolumeValue = currentVolume);
     });
     appProvider = Provider.of<AppProvider>(context, listen: false);
-    if(!appProvider.isAudioChanged&&!appProvider.isReciterChanged){
-      if(appProvider.audioPlayer.playing){
-        appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
-      }
-      else{
-        appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
-        appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
-      }
-    }
-    else{
+    if(!(!appProvider.isAudioChanged&&!appProvider.isReciterChanged)){
       appProvider.resetSeek();
-
-      appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
-      appProvider.audioPlayer.setShuffleModeEnabled(context.read<AppProvider>().wantShuffle);
     }
+    appProvider.audioPlayer.setAudioSource(appProvider.playlist!,initialIndex: widget.id-1,initialPosition: appProvider.currentAudioSeek);
     getCurrentDuration();
     appProvider.audioPlayer.play();
     super.initState();
-
   }
 
   @override
@@ -64,16 +50,17 @@ class _ScreenAudioState extends State<ScreenAudio> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.black,title: Text(widget.reciterName,style: const TextStyle(
+          color: Colors.white,fontSize: 25,fontWeight: FontWeight.w600
+      ),textDirection: TextDirection.rtl),centerTitle: true),
       backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListView(
           children: [
-            SizedBox(height: height*0.05,),
+            SizedBox(height: height*0.02,),
             Container(
               alignment: Alignment.center,
               height: height*0.05,
@@ -85,13 +72,6 @@ class _ScreenAudioState extends State<ScreenAudio> {
             Container(
               alignment: Alignment.center,
               height: height*0.05,
-              child:Text(widget.reciterName,style: const TextStyle(
-                  color: Colors.white,fontSize: 30,fontWeight: FontWeight.w600
-              ),textDirection: TextDirection.rtl),
-            ),
-            Container(
-              alignment: Alignment.center,
-              height: height*0.05,
               child:buildStreamOfCurrentSuraName(),
             ),
             SizedBox(height: height*0.05,),
@@ -99,19 +79,20 @@ class _ScreenAudioState extends State<ScreenAudio> {
             SizedBox(height: height*0.05,),
             buildStreamOfSeekPosition(),
             RowOfControlsButtons(audioPlayer: appProvider.audioPlayer),
-            SizedBox(height: height*0.05,),
+            SizedBox(height: height*0.02,),
+
           ],
         ),
       ),
     );
   }
 
+
   StreamSubscription<Duration> getCurrentDuration(){
     return appProvider.audioPlayer.positionStream.listen((event) {
       appProvider.currentAudioSeek=event;
     });
   }
-
   Stream<PositionData> _positionDataStream(){
     return Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
         appProvider.audioPlayer.positionStream,

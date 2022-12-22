@@ -28,6 +28,15 @@ class AppProvider with ChangeNotifier{
   Sura ?currentSura;
   AudioPlayer audioPlayer = AudioPlayer();
   TextEditingController controller =TextEditingController();
+  void sameAudio() {
+    setIsAudioChanged(false);
+    setCurrentSuraIndex(-1);
+    audioPlayer.pause();
+  }
+  void audioChanged(int index) {
+    setIsAudioChanged(true);
+    setCurrentSuraIndex(index);
+  }
   void resetFilteredReciter(){
     filteredReciter=null;
     controller.clear();
@@ -118,7 +127,7 @@ class AppProvider with ChangeNotifier{
    Future<List<Sura>> getSuwar(String baseUrl) async{
      Set<Sura>reciterSwar={};
      if(map.isEmpty){
-       ListOfSuwar.forEach((element) {
+       listOfSuwar.forEach((element) {
          map[element["id"]]=element;
        });
      }

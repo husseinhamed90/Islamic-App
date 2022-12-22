@@ -1,4 +1,4 @@
-const List ListOfSuwar =  [
+const List listOfSuwar =  [
   {
     "id": 1,
     "name": "الفاتحة\r\n",

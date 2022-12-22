@@ -35,29 +35,14 @@ class VersesScreen extends StatelessWidget {
                     separatorBuilder: (BuildContext context, int index) => const Divider(),
                     itemBuilder: (BuildContext context, int index) => Row(
                         children: [
-                          Text(snapshot.data![index].name!,
-                              style: const TextStyle(color: Colors.white)),
+                          Text(snapshot.data![index].name!, style: const TextStyle(color: Colors.white)),
                           const Spacer(),
                           IconButton(onPressed: () {
                             if(context.read<AppProvider>().currentSuraIndex==index){
-                              context.read<AppProvider>().setIsAudioChanged(false);
-                              context.read<AppProvider>().setCurrentSuraIndex(-1);
-                              context.read<AppProvider>().audioPlayer.pause();
+                              context.read<AppProvider>().sameAudio();
                             }
                             else{
-                              if(context.read<AppProvider>().currentSuraIndex!=-1) {
-                                if(context.read<AppProvider>().currentSuraIndex!=index){
-                                  context.read<AppProvider>().setIsAudioChanged(true);
-                                  context.read<AppProvider>().setCurrentSuraIndex(index);
-                                }
-                                else{
-                                  context.read<AppProvider>().setIsAudioChanged(false);
-                                }
-                              }
-                              else {
-                                context.read<AppProvider>().setIsReciterChanged(true);
-                                context.read<AppProvider>().setCurrentSuraIndex(index);
-                              }
+                              context.read<AppProvider>().audioChanged(index);
                               String audioUrl = context.read<AppProvider>().getAudioUrl(baseUrl,snapshot.data![index].id!);
                               Navigator.push(context, MaterialPageRoute(builder: (context) =>  ScreenAudio(baseUrl:baseUrl ,audioUrl:audioUrl,reciterName:reciterName,
                                 suratName: snapshot.data![index].name!, id: snapshot.data![index].id!,reciterSwar: snapshot.data!,)));
@@ -68,7 +53,7 @@ class VersesScreen extends StatelessWidget {
                   );
                 }
                 else{
-                  return const Center(child: CircularProgressIndicator(),);
+                  return const Center(child: CircularProgressIndicator(color: Colors.white),);
                 }
               },
             );
@@ -77,4 +62,8 @@ class VersesScreen extends StatelessWidget {
       ),
     );
   }
+
+
+
+
 }
